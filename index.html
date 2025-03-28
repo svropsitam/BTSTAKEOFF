@@ -610,116 +610,114 @@
   <div class="landing-panels blog-archive language-ukrainian" style="display: none;"></div>
   
   <!-- Скрипти управління мовою, панелями, архівом та Fullscreen -->
-  <script>
-    // Встановлюємо глобальну мову за замовчуванням
-    window.currentLanguage = 'en';
+ <script>
+  // Встановлюємо глобальну мову за замовчуванням
+  window.currentLanguage = 'en';
+  
+  document.addEventListener('DOMContentLoaded', function() {
+    let currentLanguage = window.currentLanguage; // 'en' або 'uk'
+    const btnEnglish = document.getElementById('btnEnglish');
+    const btnUkrainian = document.getElementById('btnUkrainian');
+    const englishPanels = document.querySelector('.landing-panels.language-english');
+    const ukrainianPanels = document.querySelector('.landing-panels.language-ukrainian');
+    const toggleButton = document.getElementById('toggle-panels');
+    const fullscreenButton = document.getElementById('fullscreen-button');
+    const toggleArchiveButton = document.getElementById('toggle-archive');
     
-    document.addEventListener('DOMContentLoaded', function() {
-      let currentLanguage = window.currentLanguage; // 'en' або 'uk'
-      const btnEnglish = document.getElementById('btnEnglish');
-      const btnUkrainian = document.getElementById('btnUkrainian');
-      const englishPanels = document.querySelector('.landing-panels.language-english');
-      const ukrainianPanels = document.querySelector('.landing-panels.language-ukrainian');
-      const toggleButton = document.getElementById('toggle-panels');
-      const fullscreenButton = document.getElementById('fullscreen-button');
-      const toggleArchiveButton = document.getElementById('toggle-archive');
-      
-      function updateToggleButtonText() {
-        const isCollapsed = document.querySelector('.landing-panels').classList.contains('collapsed');
-        toggleButton.textContent = (currentLanguage === 'en')
-          ? (isCollapsed ? "Expand Panels" : "Collapse Panels")
-          : (isCollapsed ? "Розгорнути панелі" : "Згорнути панелі");
-      }
-      
-      function updateFullscreenButtonText() {
-        fullscreenButton.textContent = (document.fullscreenElement)
-          ? (currentLanguage === 'en' ? "Exit Fullscreen" : "Вийти з режиму повного екрану")
-          : (currentLanguage === 'en' ? "Enter Fullscreen" : "Увійти в режим повного екрану");
-      }
-      
+    function updateToggleButtonText() {
+      const isCollapsed = document.querySelector('.landing-panels').classList.contains('collapsed');
+      toggleButton.textContent = (currentLanguage === 'en')
+        ? (isCollapsed ? "Expand Panels" : "Collapse Panels")
+        : (isCollapsed ? "Розгорнути панелі" : "Згорнути панелі");
+    }
+    
+    function updateFullscreenButtonText() {
+      fullscreenButton.textContent = (document.fullscreenElement)
+        ? (currentLanguage === 'en' ? "Exit Fullscreen" : "Вийти з режиму повного екрану")
+        : (currentLanguage === 'en' ? "Enter Fullscreen" : "Увійти в режим повного екрану");
+    }
+    
+    updateToggleButtonText();
+    updateFullscreenButtonText();
+    
+    btnEnglish.addEventListener('click', function() {
+      englishPanels.style.display = 'flex';
+      ukrainianPanels.style.display = 'none';
+      document.querySelector('.landing-panels.blog-archive.language-english').style.display = 'none';
+      document.querySelector('.landing-panels.blog-archive.language-ukrainian').style.display = 'none';
+      currentLanguage = 'en';
+      window.currentLanguage = 'en';
       updateToggleButtonText();
       updateFullscreenButtonText();
-      
-      btnEnglish.addEventListener('click', function() {
-        englishPanels.style.display = 'flex';
-        ukrainianPanels.style.display = 'none';
-        // Оновлюємо видимість архівних контейнерів
-        document.querySelector('.landing-panels.blog-archive.language-english').style.display = 'none';
-        document.querySelector('.landing-panels.blog-archive.language-ukrainian').style.display = 'none';
-        currentLanguage = 'en';
-        window.currentLanguage = 'en';
-        updateToggleButtonText();
-        updateFullscreenButtonText();
-        updateToggleArchiveButtonText();
-        updatePanelsPointerEvents();
-      });
-      
-      btnUkrainian.addEventListener('click', function() {
-        englishPanels.style.display = 'none';
-        ukrainianPanels.style.display = 'flex';
-        document.querySelector('.landing-panels.blog-archive.language-english').style.display = 'none';
-        document.querySelector('.landing-panels.blog-archive.language-ukrainian').style.display = 'none';
-        currentLanguage = 'uk';
-        window.currentLanguage = 'uk';
-        updateToggleButtonText();
-        updateFullscreenButtonText();
-        updateToggleArchiveButtonText();
-        updatePanelsPointerEvents();
-      });
-      
-      toggleButton.addEventListener('click', function() {
-        const panels = document.querySelectorAll('.landing-panels');
-        const isCollapsed = panels[0].classList.contains('collapsed');
-        panels.forEach(panel => panel.classList.toggle('collapsed', !isCollapsed));
-        updateToggleButtonText();
-      });
-      
-      fullscreenButton.addEventListener('click', function() {
-        if (!document.fullscreenElement) {
-          document.documentElement.requestFullscreen().then(updateFullscreenButtonText).catch(err => {
-            console.warn("Fullscreen request failed:", err);
-          });
-        } else {
-          document.exitFullscreen().then(updateFullscreenButtonText).catch(err => {
-            console.warn("Exiting fullscreen failed:", err);
-          });
-        }
-      });
-      
-      document.addEventListener('fullscreenchange', updateFullscreenButtonText);
-      
-      // Функція перемикання між лендінгом і архівом
-      function toggleArchive() {
-        const languageClass = (currentLanguage === 'uk') ? 'language-ukrainian' : 'language-english';
-        let staticContainer = document.querySelector(`.landing-panels.${languageClass}:not(.blog-archive)`);
-        let archiveContainer = document.querySelector(`.landing-panels.blog-archive.${languageClass}`);
-        if(staticContainer.style.display !== "none") {
-            staticContainer.style.display = "none";
-            archiveContainer.style.display = "flex";
-            toggleArchiveButton.textContent = (currentLanguage === 'en') ? "Back to Landing" : "Повернутися до лендінгу";
-        } else {
-            staticContainer.style.display = "flex";
-            archiveContainer.style.display = "none";
-            toggleArchiveButton.textContent = (currentLanguage === 'en') ? "Go to Blog Archive" : "Перейти до архіву блогу";
-        }
-        updatePanelsPointerEvents();
-      }
-      
-      toggleArchiveButton.addEventListener('click', toggleArchive);
-      
-      function updateToggleArchiveButtonText() {
-        const languageClass = (currentLanguage === 'uk') ? 'language-ukrainian' : 'language-english';
-        let staticContainer = document.querySelector(`.landing-panels.${languageClass}:not(.blog-archive)`);
-        let archiveContainer = document.querySelector(`.landing-panels.blog-archive.${languageClass}`);
-        if(staticContainer.style.display !== "none") {
-            toggleArchiveButton.textContent = (currentLanguage === 'en') ? "Go to Blog Archive" : "Перейти до архіву блогу";
-        } else {
-            toggleArchiveButton.textContent = (currentLanguage === 'en') ? "Back to Landing" : "Повернутися до лендінгу";
-        }
-      }
-      
       updateToggleArchiveButtonText();
+      updatePanelsPointerEvents();
     });
+    
+    btnUkrainian.addEventListener('click', function() {
+      englishPanels.style.display = 'none';
+      ukrainianPanels.style.display = 'flex';
+      document.querySelector('.landing-panels.blog-archive.language-english').style.display = 'none';
+      document.querySelector('.landing-panels.blog-archive.language-ukrainian').style.display = 'none';
+      currentLanguage = 'uk';
+      window.currentLanguage = 'uk';
+      updateToggleButtonText();
+      updateFullscreenButtonText();
+      updateToggleArchiveButtonText();
+      updatePanelsPointerEvents();
+    });
+    
+    toggleButton.addEventListener('click', function() {
+      const panels = document.querySelectorAll('.landing-panels');
+      const isCollapsed = panels[0].classList.contains('collapsed');
+      panels.forEach(panel => panel.classList.toggle('collapsed', !isCollapsed));
+      updateToggleButtonText();
+    });
+    
+    fullscreenButton.addEventListener('click', function() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().then(updateFullscreenButtonText).catch(err => {
+          console.warn("Fullscreen request failed:", err);
+        });
+      } else {
+        document.exitFullscreen().then(updateFullscreenButtonText).catch(err => {
+          console.warn("Exiting fullscreen failed:", err);
+        });
+      }
+    });
+    
+    document.addEventListener('fullscreenchange', updateFullscreenButtonText);
+    
+    // Функція перемикання між лендінгом і архівом
+    function toggleArchive() {
+      const languageClass = (currentLanguage === 'uk') ? 'language-ukrainian' : 'language-english';
+      let staticContainer = document.querySelector(`.landing-panels.${languageClass}:not(.blog-archive)`);
+      let archiveContainer = document.querySelector(`.landing-panels.blog-archive.${languageClass}`);
+      if(staticContainer.style.display !== "none") {
+          staticContainer.style.display = "none";
+          archiveContainer.style.display = "flex";
+          toggleArchiveButton.textContent = (currentLanguage === 'en') ? "Back to Landing" : "Повернутися до лендінгу";
+      } else {
+          staticContainer.style.display = "flex";
+          archiveContainer.style.display = "none";
+          toggleArchiveButton.textContent = (currentLanguage === 'en') ? "Go to Blog Archive" : "Перейти до архіву блогу";
+      }
+      updatePanelsPointerEvents();
+    }
+    
+    toggleArchiveButton.addEventListener('click', toggleArchive);
+    
+    function updateToggleArchiveButtonText() {
+      const languageClass = (currentLanguage === 'uk') ? 'language-ukrainian' : 'language-english';
+      let staticContainer = document.querySelector(`.landing-panels.${languageClass}:not(.blog-archive)`);
+      let archiveContainer = document.querySelector(`.landing-panels.blog-archive.${languageClass}`);
+      if(staticContainer.style.display !== "none") {
+          toggleArchiveButton.textContent = (currentLanguage === 'en') ? "Go to Blog Archive" : "Перейти до архіву блогу";
+      } else {
+          toggleArchiveButton.textContent = (currentLanguage === 'en') ? "Back to Landing" : "Повернутися до лендінгу";
+      }
+    }
+    
+    updateToggleArchiveButtonText();
     
     // Оновлення прокрутки: якщо висота активного контейнера перевищує клієнтську – відключаємо orbitControls (якщо вони є)
     function updatePanelsPointerEvents() {
@@ -748,242 +746,212 @@
     }
     window.addEventListener('resize', updatePanelsPointerEvents);
     window.addEventListener('load', updatePanelsPointerEvents);
-  </script>
+  });
   
-  <!-- Скрипт для створення динамічних панелей із BTSLANDING -->
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      // Функція форматування дати (перетворює "20220217" або "202202171230" у "2022 січня 17 12:30")
-      function formatDate(dateKey) {
-        const year = dateKey.substring(0,4);
-        const month = dateKey.substring(4,6);
-        const day = dateKey.substring(6,8);
-        let hour = "00", minute = "00";
-        if(dateKey.length >= 10) {
-            hour = dateKey.substring(8,10);
-        }
-        if(dateKey.length >= 12) {
-            minute = dateKey.substring(10,12);
-        }
-        const monthsUk = ["січня", "лютого", "березня", "квітня", "травня", "червня", "липня", "серпня", "вересня", "жовтня", "листопада", "грудня"];
-        const monthIndex = parseInt(month, 10) - 1;
-        const monthName = monthsUk[monthIndex] || month;
-        let formattedDate = `${year} ${monthName} ${day}`;
-        if(dateKey.length >= 10) {
-            formattedDate += ` ${hour}:${minute}`;
-        }
-        return formattedDate;
+  // Скрипт для створення динамічних панелей із BTSLANDING
+  document.addEventListener('DOMContentLoaded', function() {
+    // Функція форматування дати (перетворює "20220217" або "202202171230" у "2022 January 17 12:30" для англійської версії або "2022 січня 17 12:30" для української)
+    function formatDate(dateKey, lang) {
+      const year = dateKey.substring(0,4);
+      const month = dateKey.substring(4,6);
+      const day = dateKey.substring(6,8);
+      let hour = "00", minute = "00";
+      if(dateKey.length >= 10) {
+          hour = dateKey.substring(8,10);
+      }
+      if(dateKey.length >= 12) {
+          minute = dateKey.substring(10,12);
       }
       
-      // Функції для коригування розміру зображення та масштабування тексту
-      function adjustPanelImage(panel) {
-        const fixedPanelHeight = 600;
-        let textContainer = panel.querySelector('.panel-text-container');
-        let dateContainer = panel.querySelector('.panel-date');
-        let textHeight = 0;
-        if (textContainer) textHeight += textContainer.offsetHeight;
-        if (dateContainer) textHeight += dateContainer.offsetHeight;
-        let availableHeight = fixedPanelHeight - textHeight;
-        availableHeight = Math.min(availableHeight, 400);
-        let imageContainer = panel.querySelector('.panel-image-container');
-        if (imageContainer) {
-          imageContainer.style.height = availableHeight + "px";
-          console.log("Adjusted image container height to", availableHeight);
-        }
+      // Назви місяців для української та англійської мов
+      const monthsUk = ["січня", "лютого", "березня", "квітня", "травня", "червня", "липня", "серпня", "вересня", "жовтня", "листопада", "грудня"];
+      const monthsEn = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+      
+      const monthIndex = parseInt(month, 10) - 1;
+      let monthName = lang === "uk" ? monthsUk[monthIndex] : monthsEn[monthIndex];
+      monthName = monthName || month;
+      
+      let formattedDate = `${year} ${monthName} ${day}`;
+      if(dateKey.length >= 10) {
+          formattedDate += ` ${hour}:${minute}`;
+      }
+      return formattedDate;
+    }
+    
+    // Функції для коригування розміру зображення та масштабування тексту
+    function adjustPanelImage(panel) {
+      const fixedPanelHeight = 600;
+      let textContainer = panel.querySelector('.panel-text-container');
+      let dateContainer = panel.querySelector('.panel-date');
+      let textHeight = 0;
+      if (textContainer) textHeight += textContainer.offsetHeight;
+      if (dateContainer) textHeight += dateContainer.offsetHeight;
+      let availableHeight = fixedPanelHeight - textHeight;
+      availableHeight = Math.min(availableHeight, 400);
+      let imageContainer = panel.querySelector('.panel-image-container');
+      if (imageContainer) {
+        imageContainer.style.height = availableHeight + "px";
+        console.log("Adjusted image container height to", availableHeight);
+      }
+    }
+    
+    function adjustPanelText(panel) {
+      const desiredPanelHeight = 600;
+      let textContainer = panel.querySelector('.panel-text-container');
+      if (!textContainer) return;
+      let naturalHeight = textContainer.scrollHeight;
+      if (naturalHeight > desiredPanelHeight) {
+        let scale = desiredPanelHeight / naturalHeight;
+        textContainer.style.transformOrigin = "top";
+        textContainer.style.transform = "scale(" + scale + ")";
+        console.log("Adjusted text scale to", scale);
+      } else {
+        textContainer.style.transform = "";
+      }
+    }
+    
+    // Функція створення панелі
+    // containerType: "showcase" (для статичних) або "archive" (для блогу)
+    // isShowcase: прапорець для вітринної панелі (додає кнопку переходу в архів)
+    function createLandingPanel(contentHTML, lang, dateKey, containerType, isShowcase = false) {
+      let panel = document.createElement("div");
+      panel.classList.add("panel");
+      
+      let tempDiv = document.createElement("div");
+      tempDiv.innerHTML = contentHTML;
+      
+      let imgElem = tempDiv.querySelector("img");
+      if (imgElem && imgElem.src.startsWith("data:image/")) {
+        panel.classList.add("panel-large");
+        console.log("Creating large panel for image post, date:", dateKey);
+        imgElem.parentNode.removeChild(imgElem);
+        let imageContainer = document.createElement("div");
+        imageContainer.className = "panel-image-container";
+        imageContainer.appendChild(imgElem);
+        panel.appendChild(imageContainer);
+        
+        let textContent = tempDiv.innerHTML;
+        let textContainer = document.createElement("div");
+        textContainer.className = "panel-text-container";
+        textContainer.innerHTML = textContent;
+        panel.appendChild(textContainer);
+      } else {
+        panel.style.minHeight = "600px";
+        let textContainer = document.createElement("div");
+        textContainer.className = "panel-text-container";
+        textContainer.innerHTML = tempDiv.innerHTML;
+        panel.appendChild(textContainer);
+        setTimeout(() => { adjustPanelText(panel); }, 0);
       }
       
-      function adjustPanelText(panel) {
-        const desiredPanelHeight = 600;
-        let textContainer = panel.querySelector('.panel-text-container');
-        if (!textContainer) return;
-        let naturalHeight = textContainer.scrollHeight;
-        if (naturalHeight > desiredPanelHeight) {
-          let scale = desiredPanelHeight / naturalHeight;
-          textContainer.style.transformOrigin = "top";
-          textContainer.style.transform = "scale(" + scale + ")";
-          console.log("Adjusted text scale to", scale);
-        } else {
-          textContainer.style.transform = "";
-        }
+      let dateDiv = document.createElement("div");
+      dateDiv.className = "panel-date";
+      let formattedDate = formatDate(dateKey, lang);
+      if(lang === "uk") {
+        dateDiv.textContent = "Опубліковано: " + formattedDate;
+      } else {
+        dateDiv.textContent = "Posted on: " + formattedDate;
+      }
+      panel.appendChild(dateDiv);
+      
+      // Якщо це вітринна панель – додаємо кнопку для переходу до архіву
+      if (isShowcase) {
+        let archiveButton = document.createElement("button");
+        archiveButton.textContent = (lang === "uk") ? "Перейти до архіву блогу" : "Go to Blog Archive";
+        archiveButton.className = "to-blog-archive";
+        archiveButton.addEventListener('click', function(){
+          document.getElementById('toggle-archive').click();
+        });
+        panel.appendChild(archiveButton);
       }
       
-      // Функція створення панелі
-      // containerType: "showcase" (для статичних) або "archive" (для блогу)
-      // isShowcase: прапорець для вітринної панелі (додає кнопку переходу в архів)
-      function createLandingPanel(contentHTML, lang, dateKey, containerType, isShowcase = false) {
-        let panel = document.createElement("div");
-        panel.classList.add("panel");
-        
-        let tempDiv = document.createElement("div");
-        tempDiv.innerHTML = contentHTML;
-        
-        let imgElem = tempDiv.querySelector("img");
-        if (imgElem && imgElem.src.startsWith("data:image/")) {
-          panel.classList.add("panel-large");
-          console.log("Creating large panel for image post, date:", dateKey);
-          imgElem.parentNode.removeChild(imgElem);
-          let imageContainer = document.createElement("div");
-          imageContainer.className = "panel-image-container";
-          imageContainer.appendChild(imgElem);
-          panel.appendChild(imageContainer);
-          
-          let textContent = tempDiv.innerHTML;
-          let textContainer = document.createElement("div");
-          textContainer.className = "panel-text-container";
-          textContainer.innerHTML = textContent;
-          panel.appendChild(textContainer);
-        } else {
-          panel.style.minHeight = "600px";
-          let textContainer = document.createElement("div");
-          textContainer.className = "panel-text-container";
-          textContainer.innerHTML = tempDiv.innerHTML;
-          panel.appendChild(textContainer);
-          setTimeout(() => { adjustPanelText(panel); }, 0);
-        }
-        
-        let dateDiv = document.createElement("div");
-        dateDiv.className = "panel-date";
-        let formattedDate = formatDate(dateKey);
-        if(lang === "uk") {
-          dateDiv.textContent = "Опубліковано: " + formattedDate;
-        } else {
-          dateDiv.textContent = "Posted on: " + formattedDate;
-        }
-        panel.appendChild(dateDiv);
-        
-        // Якщо це вітринна панель – додаємо кнопку для переходу до архіву
-        if (isShowcase) {
-          let archiveButton = document.createElement("button");
-          archiveButton.textContent = (lang === "uk") ? "Перейти до архіву блогу" : "Go to Blog Archive";
-          archiveButton.className = "to-blog-archive";
-          archiveButton.addEventListener('click', function(){
-            document.getElementById('toggle-archive').click();
-          });
-          panel.appendChild(archiveButton);
-        }
-        
-        let containerSelector = ".landing-panels." + (lang === "uk" ? "language-ukrainian" : "language-english");
-        if(containerType === "archive") {
-          containerSelector += ".blog-archive";
-        }
-        let container = document.querySelector(containerSelector);
-        if (container) {
-          container.insertBefore(panel, container.firstChild);
-          console.log("Panel inserted for language", lang, "with date:", dateKey, "into", containerSelector);
-          if (panel.querySelector(".panel-image-container")) {
-            setTimeout(() => { adjustPanelImage(panel); }, 0);
-          }
-        } else {
-          console.error("Container not found for language:", lang, "and container type:", containerType);
-        }
+      let containerSelector = ".landing-panels." + (lang === "uk" ? "language-ukrainian" : "language-english");
+      if(containerType === "archive") {
+        containerSelector += ".blog-archive";
       }
-      
-      // Отримання даних з BTSLANDING та розподіл записів
-      function fetchBTSLandingData() {
-        const dbURL = "https://unsafemsg-96d03-default-rtdb.europe-west1.firebasedatabase.app/BTSLANDING/.json";
-        console.log("Fetching BTSLANDING data from:", dbURL);
-        fetch(dbURL)
-          .then(response => response.json())
-          .then(data => {
-            console.log("Data fetched:", data);
-            let entriesEn = [];
-            let entriesUk = [];
-            if (data) {
-              Object.keys(data).forEach(dateKey => {
-                console.log("Processing entry for date:", dateKey);
-                let entry = data[dateKey];
-                if (entry && entry.content) {
-                  let contentStr = entry.content;
-                  let parser = new DOMParser();
-                  let doc = parser.parseFromString(contentStr, "text/html");
-                  let frpUkrElem = doc.querySelector("frpukr");
-                  let frpEngElem = doc.querySelector("frpeng");
-                  if (frpUkrElem) {
-                    console.log("Found Ukrainian content for date:", dateKey);
-                    entriesUk.push({ dateKey, contentHTML: frpUkrElem.innerHTML });
-                  } else if (frpEngElem) {
-                    console.log("Found English content for date:", dateKey);
-                    entriesEn.push({ dateKey, contentHTML: frpEngElem.innerHTML });
-                  } else {
-                    console.log("No recognizable <frpukr> or <frpeng> tag for date:", dateKey);
-                  }
+      let container = document.querySelector(containerSelector);
+      if (container) {
+        container.insertBefore(panel, container.firstChild);
+        console.log("Panel inserted for language", lang, "with date:", dateKey, "into", containerSelector);
+        if (panel.querySelector(".panel-image-container")) {
+          setTimeout(() => { adjustPanelImage(panel); }, 0);
+        }
+      } else {
+        console.error("Container not found for language:", lang, "and container type:", containerType);
+      }
+    }
+    
+    // Отримання даних з BTSLANDING та розподіл записів
+    function fetchBTSLandingData() {
+      const dbURL = "https://unsafemsg-96d03-default-rtdb.europe-west1.firebasedatabase.app/BTSLANDING/.json";
+      console.log("Fetching BTSLANDING data from:", dbURL);
+      fetch(dbURL)
+        .then(response => response.json())
+        .then(data => {
+          console.log("Data fetched:", data);
+          let entriesEn = [];
+          let entriesUk = [];
+          if (data) {
+            Object.keys(data).forEach(dateKey => {
+              console.log("Processing entry for date:", dateKey);
+              let entry = data[dateKey];
+              if (entry && entry.content) {
+                let contentStr = entry.content;
+                let parser = new DOMParser();
+                let doc = parser.parseFromString(contentStr, "text/html");
+                let frpUkrElem = doc.querySelector("frpukr");
+                let frpEngElem = doc.querySelector("frpeng");
+                if (frpUkrElem) {
+                  console.log("Found Ukrainian content for date:", dateKey);
+                  entriesUk.push({ dateKey, contentHTML: frpUkrElem.innerHTML });
+                } else if (frpEngElem) {
+                  console.log("Found English content for date:", dateKey);
+                  entriesEn.push({ dateKey, contentHTML: frpEngElem.innerHTML });
                 } else {
-                  console.log("No content found for date:", dateKey);
+                  console.log("No recognizable <frpukr> or <frpeng> tag for date:", dateKey);
                 }
-              });
-              
-              // Сортуємо записи за спаданням дати (формат YYYYMMDD[HHMM])
-              entriesEn.sort((a, b) => b.dateKey.localeCompare(a.dateKey));
-              entriesUk.sort((a, b) => b.dateKey.localeCompare(a.dateKey));
-              
-              // Для англійської мови: додаємо найсвіжіший пост як showcase та ще раз у архіві, решта - лише в архів
-              if (entriesEn.length > 0) {
-                let showcase = entriesEn[0];
-                createLandingPanel(showcase.contentHTML, "en", showcase.dateKey, "showcase", true);
-                createLandingPanel(showcase.contentHTML, "en", showcase.dateKey, "archive", false);
-                for (let i = 1; i < entriesEn.length; i++) {
-                  let entry = entriesEn[i];
-                  createLandingPanel(entry.contentHTML, "en", entry.dateKey, "archive", false);
-                }
+              } else {
+                console.log("No content found for date:", dateKey);
               }
-              // Для української мови: аналогічно
-              if (entriesUk.length > 0) {
-                let showcase = entriesUk[0];
-                createLandingPanel(showcase.contentHTML, "uk", showcase.dateKey, "showcase", true);
-                createLandingPanel(showcase.contentHTML, "uk", showcase.dateKey, "archive", false);
-                for (let i = 1; i < entriesUk.length; i++) {
-                  let entry = entriesUk[i];
-                  createLandingPanel(entry.contentHTML, "uk", entry.dateKey, "archive", false);
-                }
+            });
+            
+            // Сортуємо записи за спаданням дати (формат YYYYMMDD[HHMM])
+            entriesEn.sort((a, b) => b.dateKey.localeCompare(a.dateKey));
+            entriesUk.sort((a, b) => b.dateKey.localeCompare(a.dateKey));
+            
+            // Для англійської мови: додаємо найсвіжіший пост як showcase та ще раз у архіві, решта - лише в архів
+            if (entriesEn.length > 0) {
+              let showcase = entriesEn[0];
+              createLandingPanel(showcase.contentHTML, "en", showcase.dateKey, "showcase", true);
+              createLandingPanel(showcase.contentHTML, "en", showcase.dateKey, "archive", false);
+              for (let i = 1; i < entriesEn.length; i++) {
+                let entry = entriesEn[i];
+                createLandingPanel(entry.contentHTML, "en", entry.dateKey, "archive", false);
               }
-            } else {
-              console.log("No data returned from BTSLANDING");
             }
-          })
-          .catch(err => {
-            console.error("Error fetching BTSLANDING data:", err);
-          });
-      }
-      
-      fetchBTSLandingData();
-    });
-  </script>
-  
-  <!-- Скрипт для перемішування кольорів панелей -->
-  <script>
-    window.addEventListener('DOMContentLoaded', function() {
-      const panels = document.querySelectorAll('.landing-panels .panel');
-      const availableColors = [
-        '#FF5733',
-        '#33FF57',
-        '#3357FF',
-        '#FF33A6',
-        '#33FFF7',
-        '#F7FF33',
-        '#FF8C00',
-        '#ADFF2F',
-        '#40E0D0',
-        '#FF1493'
-      ];
-      
-      function shuffle(array) {
-        for (let i = array.length - 1; i > 0; i--) {
-          const j = Math.floor(Math.random() * (i + 1));
-          [array[i], array[j]] = [array[j], array[i]];
-        }
-        return array;
-      }
-      
-      const shuffledColors = shuffle(availableColors.slice());
-      
-      panels.forEach(function(panel, index) {
-        let color = (index < shuffledColors.length)
-          ? shuffledColors[index]
-          : '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0');
-        panel.style.color = color;
-      });
-    });
-  </script>
+            // Для української мови: аналогічно
+            if (entriesUk.length > 0) {
+              let showcase = entriesUk[0];
+              createLandingPanel(showcase.contentHTML, "uk", showcase.dateKey, "showcase", true);
+              createLandingPanel(showcase.contentHTML, "uk", showcase.dateKey, "archive", false);
+              for (let i = 1; i < entriesUk.length; i++) {
+                let entry = entriesUk[i];
+                createLandingPanel(entry.contentHTML, "uk", entry.dateKey, "archive", false);
+              }
+            }
+          } else {
+            console.log("No data returned from BTSLANDING");
+          }
+        })
+        .catch(err => {
+          console.error("Error fetching BTSLANDING data:", err);
+        });
+    }
+    
+    fetchBTSLandingData();
+  });
+</script>
+
   
 <script type="importmap">
 {
@@ -1391,9 +1359,9 @@
           .start();
 
         // Додаємо ефект часточок, які розлітаються від центру
-        const particleCount = 360;
+        const particleCount = 72;
         for (let i = 0; i < particleCount; i++) {
-          const particleGeometry = new THREE.SphereGeometry(1, 8, 8);
+          const particleGeometry = new THREE.SphereGeometry(2, 8, 8);
           const particleMaterial = new THREE.MeshStandardMaterial({
             color: 0xffffff,
             emissive: 0xffffff,
