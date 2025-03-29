@@ -916,8 +916,8 @@
             });
             
             // Сортуємо записи за спаданням дати (формат YYYYMMDD[HHMM])
-            entriesEn.sort((a, b) => b.dateKey.localeCompare(a.dateKey));
-            entriesUk.sort((a, b) => b.dateKey.localeCompare(a.dateKey));
+           entriesEn.sort((a, b) => b.dateKey.localeCompare(a.dateKey));
+           entriesUk.sort((a, b) => b.dateKey.localeCompare(a.dateKey));
             
             // Для англійської мови: додаємо найсвіжіший пост як showcase та ще раз у архіві, решта - лише в архів
             if (entriesEn.length > 0) {
@@ -950,6 +950,41 @@
     
     fetchBTSLandingData();
   });
+   
+    <!-- Скрипт для перемішування кольорів панелей -->
+ 
+    window.addEventListener('DOMContentLoaded', function() {
+      const panels = document.querySelectorAll('.landing-panels .panel');
+      const availableColors = [
+        '#FF5733',
+        '#33FF57',
+        '#3357FF',
+        '#FF33A6',
+        '#33FFF7',
+        '#F7FF33',
+        '#FF8C00',
+        '#ADFF2F',
+        '#40E0D0',
+        '#FF1493'
+      ];
+      
+      function shuffle(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+      }
+      
+      const shuffledColors = shuffle(availableColors.slice());
+      
+      panels.forEach(function(panel, index) {
+        let color = (index < shuffledColors.length)
+          ? shuffledColors[index]
+          : '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0');
+        panel.style.color = color;
+      });
+    });
 </script>
 
   
